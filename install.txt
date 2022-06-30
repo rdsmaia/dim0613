@@ -1,0 +1,31 @@
+1) instalar um ambiente virtual (recomendação: anaconda ou miniconda);
+
+	$ conda create -n dim0613 python=3.9
+	$ conda activate dim0613
+
+2) Instalar os seguintes pacotes:
+
+	* scikit-learn (machine learning toolkit)
+
+	$ conda install -c conda-forge scikit-learn
+
+	* pandas (para carregar datasets)
+
+	$ conda install pandas
+
+	* matplotlib e seaborn (para visualizar dados)
+
+	$ conda install -c conda-forge matplotlib
+	$ conda install -c anaconda seaborn
+
+	* jupyter
+
+	$ conda install jupyter
+
+	* tensorflow e keras (sem suporte a GPU)
+
+	$ pip install tensorflow
+
+
+
+
