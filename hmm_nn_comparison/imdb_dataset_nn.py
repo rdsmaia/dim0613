@@ -14,6 +14,11 @@ NUM_EPOCHS = 20
 NUM_LSTM_UNITS = 32
 DROPOUT_RATE = 0.2
 LR = 0.001
+BETA1 = 0.9
+BETA2 = 0.999
+EPSILON = 1.0e-8
+DECAY = 0.0
+VAL_PERC = 0.4
 
 
 def main():
@@ -76,14 +81,21 @@ def main():
 
 	# set optimizer
 	opt = optimizers.Adam(lr=LR,
-			beta_1=0.9,
-			beta_2=0.999,
-			epsilon=1e-08,
-			decay=0.0)
+			beta_1=BETA1,
+			beta_2=BETA2,
+			epsilon=EPSILON,
+			decay=DECAY)
 
 	# set loss and metrics
 	loss = losses.binary_crossentropy
 	met = [metrics.binary_accuracy]
+
+	# compile model: optimization method, training criterion and metrics
+	model.compile(
+		optimizer=opt,
+		loss=loss,
+		metrics=met
+	)
 
 	# early stop, save best checkpoint
 	filepath = ckpts + '/weights-improvement-{epoch:02d}-{val_binary_accuracy:.4f}.hdf5'
@@ -95,28 +107,27 @@ def main():
 			filepath=filepath,
 			monitor='val_binary_accuracy',
 			save_best_only=True,
-			verbose=1)
+			verbose=1),
+		TensorBoard(
+			log_dir=logdir),
 			]
 
-	# compile model: optimization method, training criterion and metrics
-	model.compile(
-		optimizer=opt,
-		loss=loss,
-		metrics=met
-		)
-
 	# split training data into training and validation
-	X_val = X_train[:10000]
-	partial_X_train = X_train[10000:]
-	y_val = y_train[:10000]
-	partial_y_train = y_train[10000:]
+	nsamples = X_train.shape[0]
+	nval_samples = int(VAL_PERC * nsamples)
+	X_val = X_train[:nval_samples]
+	partial_X_train = X_train[nval_samples:]
+	y_val = y_train[:nval_samples]
+	partial_y_train = y_train[nval_samples:]
 
 	# train model
 	history = model.fit(partial_X_train,
 		partial_y_train,
 		epochs=NUM_EPOCHS,
 		batch_size=BATCH_SIZE,
-		validation_data=(X_val, y_val))
+		validation_data=(X_val, y_val),
+		callbacks=callbacks_list,
+		verbose=1)
 
 	# save training history
 	history_df = pd.DataFrame(history.history)
