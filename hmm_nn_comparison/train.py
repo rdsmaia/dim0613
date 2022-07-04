@@ -8,11 +8,8 @@ from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping, TensorBoa
 
 # constants and hyperparameters
 MAX_WORD_INDEX = 10000
-EMBEDDING_DIM = 128
 BATCH_SIZE = 128
 NUM_EPOCHS = 20
-NUM_LSTM_UNITS = 32
-DROPOUT_RATE = 0.2
 LR = 0.001
 BETA1 = 0.9
 BETA2 = 0.999
@@ -30,6 +27,17 @@ def main():
 	model_name	= args.model_name
 
 	print(f'\nModel type: {model_name}')
+
+	if model_name == 'model1':
+		NUM_LSTM_UNITS = 128
+		DROPOUT_RATE = 0.2
+		EMBEDDING_DIM = 128
+	elif model_name == 'model2':
+		NUM_LSTM_UNITS = 128
+		DROPOUT_RATE = 0.5
+		EMBEDDING_DIM = 128
+	else:
+		raise ValueError(f'Model {model_name} is nor ready yet.')
 
 	history_file = os.path.join(model_name, f'history_{model_name}.csv')
 	logdir = os.path.join(model_name, 'log')
@@ -65,12 +73,6 @@ def main():
 	# build model
 	model = models.Sequential()
 	model.add(layers.Embedding(MAX_WORD_INDEX, EMBEDDING_DIM))
-	model.add(layers.LSTM(
-			units=NUM_LSTM_UNITS,
-			dropout=DROPOUT_RATE,
-			recurrent_dropout=DROPOUT_RATE,
-			return_sequences=True
-		))
 	model.add(layers.LSTM(
                         units=NUM_LSTM_UNITS,
                         dropout=DROPOUT_RATE,
@@ -125,6 +127,7 @@ def main():
 		partial_y_train,
 		epochs=NUM_EPOCHS,
 		batch_size=BATCH_SIZE,
+		shuffle=True,
 		validation_data=(X_val, y_val),
 		callbacks=callbacks_list,
 		verbose=1)
@@ -133,13 +136,6 @@ def main():
 	history_df = pd.DataFrame(history.history)
 	with open(history_file, mode='w') as f:
 		history_df.to_csv(f)
-
-	# score model using test data
-	score, acc = model.evaluate(
-			X_test, y_test,
-			batch_size=BATCH_SIZE)
-	print('Test score (loss):', score)
-	print('Test accuracy:', acc)
 
 
 if __name__ == "__main__":
