@@ -1,9 +1,17 @@
-1) instalar um ambiente virtual (recomendação: anaconda ou miniconda);
+1) Instale o Miniconda (recomendado) ou Anaconda (caso prefira)
+
+https://docs.conda.io/en/latest/miniconda.html
+https://www.anaconda.com/products/distribution
+
+2) Crie um ambiente virtual (recomendação: anaconda ou miniconda);
 
 	$ conda create -n dim0613 python=3.9
+
+3) Entre no embiente:
+
 	$ conda activate dim0613
 
-2) Instalar os seguintes pacotes:
+4) Instale os seguintes pacotes:
 
 	* scikit-learn (machine learning toolkit)
 
